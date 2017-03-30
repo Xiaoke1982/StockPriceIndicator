@@ -35,11 +35,10 @@ In the directory UserInterface:
 4. BestLeaner.py: OOP class for selecting best model among KNN, Bagging, Decision Tree and Random Forest
 5. StockIndicator.py: Implementation for User Interface
 
-The project also contains three other files:
+The project also contains two other files:
 
 1. StockProject.ipynb: ipython notebook that contains all the code, explanation and results of the project
-2. StockProject.html: html verson of the notebook
-3. StockProjectReport.pdf: the report of this project that illustrate the models, the structure of the project and the results in great detail. 
+2. StockProjectReport.pdf: the report of this project that illustrate the models, the structure of the project and the results in great detail. 
 
 ## Run the User Interface of Stock Price Predictor
 
