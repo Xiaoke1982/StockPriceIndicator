@@ -1,0 +1,166 @@
+from DataGetter import *
+from BestLearner import *
+
+class StockIndicator(object):
+
+	def __init__(self, symbols, train_sd, train_ed, n_days):
+		"""
+		@param symbols: list of stick names
+		@param train_sd: start date, datetime object
+		@param train_ed: end date 
+		@param n_days: int, days interval for prediction 
+		"""
+		self.symbols = symbols
+		self.train_sd = train_sd
+		self.train_ed = train_ed
+		self.n_days = n_days
+
+	def processing_data(self):
+		"""
+		the function generates self.all_prices, self.processed_train, self.processed_test
+		self.all_prices: dataframe, symbols+SPY prices, from train_sd to present
+		self.processed_train: dict for processed training data of different symbols
+		self.processed_test: dict for processed data starting from training end date to present
+		processed data: data frame consisting of many technical indicators
+		"""
+
+
+		self.all_prices = get_data(self.symbols, self.train_sd) 
+		#dataframe, symbols+SPY prices, from train_sd to present
+
+		self.dates = self.all_prices.index
+
+		self.processed_train = {} #dict for processed training data
+		self.processed_test = {} #dict for processed data from train_ed to present
+
+		for symbol in self.symbols:
+			df_train, df_test = process_data(self.all_prices, symbol, \
+											self.train_ed, self.n_days)
+			#process_data() from DataGetter separates train and test data for each symbol
+
+			#store each symbol's processed train and test data to dicts
+			self.processed_train[symbol] = df_train
+			self.processed_test[symbol] = df_test
+
+	def learn_from_data(self):
+		"""
+		The function generates the dict self.best_learners, which contains best 
+		learners for each of the symbols.
+		"""
+		self.best_learners = {}
+		for symbol in self.symbols:
+			df_train = self.processed_train[symbol]
+
+			best_learner = BestLearner(df_train)
+			best_learner.get_best_learner()
+			self.best_learners[symbol] = best_learner 
+
+	def predict(self, current_date):
+		"""
+		The function inputs technical indicators of current_date, and 
+		predict stock prices of symbols self.n_days after current_date.
+
+		@param current_date: datetime object, the day of input
+		@return: predicted prices self.n_days after current_date
+		"""
+		if current_date not in self.dates:
+			return 0
+
+		predictions = {}
+
+		for symbol in self.symbols:
+			if current_date <= self.train_ed:
+				test_df = self.processed_train[symbol]
+			else:
+				test_df = self.processed_test[symbol]
+			testX = test_df[test_df.columns[:-3]].ix[current_date].values
+			#testX is a 1-d array, so we need to reshape it to 2-d array
+			testX = testX.reshape(1, -1)
+
+			predY = self.best_learners[symbol].predict(testX)[0] # rate of change
+			#predY is a scalar, extracted from a one-element array
+
+			pred_price = self.all_prices[symbol][current_date] * (1 + predY)
+			predictions[symbol] = pred_price
+		return predictions
+
+
+
+if __name__ == "__main__":
+
+	print (" ")
+	print ("Welcome to FEI Stock Indicator")
+	print (" ")
+
+	print ("You need to input some information first before making any prediction on stock prices.")
+	print (" ")
+
+	print ("First of all, enter the symbols of the stocks you want to predict in the form as the following instance: 'AAPL GOOG IBM'.")
+	print ("You should enter a string containing valid stock symbols with a space between each pair of them, don't forget the quotes")
+
+	symbols_string = input("Now, enter the symbols: ")
+	symbols = symbols_string.split()
+	print (" ")
+
+	print ("The next step is to enter the start date and the end date that construct the date range of the training date.")
+	print ("The form of the date you enter should be: 'yyyy-mm-dd', do't forege the quotes")
+
+	sd_string = input("Now, enter the training start date: ")
+	y, m, d = (int(letter) for letter in sd_string.split("-"))
+	train_sd = dt.datetime(y,m,d)
+
+	ed_string = input("Now, enter the training end date: ")
+	y, m, d = (int(letter) for letter in ed_string.split("-"))
+	train_ed = dt.datetime(y,m,d)
+	print (" ")
+
+
+
+	print ("Next, you need to choose an interval in number of days for your prediction from 1, 5, 10 and 20.")
+	print ("For example, choosing 5 means you want to predict the stock prices after 5 TRADING days of a specific input date.")
+	n_days = input("Now, choose the interval from: 1, 5, 10, 20:")
+	print (" ")
+
+
+	
+	indicator = StockIndicator(symbols, train_sd, train_ed, n_days)
+	print ("Now extracting and processing data...")
+	indicator.processing_data()
+	print ("Now fitting the models, this may take a couple of minutes......")
+	indicator.learn_from_data()
+	print ("Model fitting done!")
+	print (" ")
+
+	print ("Now, let's make some predictions on the stock prices!")
+	print ("You need to enter an input date you want to make the prediction at.")
+	print ("Then the model will predict stock prices {} trading days after the input date you enter").format(str(n_days))
+	print ("IMPORTANT: e.g., if your input date is 2010-01-02, then the indicator will predict stock prices {} trading days after 2010-01-02.").format(str(n_days))
+	date_string = input("Now, enter an input date ('yyyy-mm-dd'): ")
+	y, m, d = (int(letter) for letter in date_string.split("-"))
+	current_date = dt.datetime(y,m,d)
+
+	predictions = indicator.predict(current_date)
+	while predictions == 0:
+		print ("The input date you just entered is not a trading day, please enter another date")
+		date_string = input("Now, enter an input date ('yyyy-mm-dd'): ")
+		y, m, d = (int(letter) for letter in date_string.split("-"))
+		current_date = dt.datetime(y,m,d)
+		predictions = indicator.predict(current_date)
+
+	print predictions
+
+	another = input("Do you want to make another prediction? 'y'/'n'(include quotes): ")
+	if another == "n":
+		print (" ")
+		print ("Thank you for using the Fei stock indicator!")
+
+	else:
+		while another == "y":
+			date_string = input("Now, enter an input date ('yyyy-mm-dd'): ")
+			y, m, d = (int(letter) for letter in date_string.split("-"))
+			current_date = dt.datetime(y,m,d)
+			predictions = indicator.predict(current_date)
+			print predictions
+
+			another = input("Do you want to make another prediction? 'y'/'n'(include quotes): ")
+
