@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>StockIndicator</title>
+<title>StockProject</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -11768,7 +11768,7 @@ The stock predictor firstly asks the user to input: stocks we are interested in,
 </li>
 <li><p>According to the input, the daily trading data of the stocks and S&amp;P 500 ranging from the training start date to the training end date are extracted directly from the Yahoo! Finance by the API of python module <strong>pandas_datareader.data</strong>. Since the project is to predict Adjusted Close prices, we extract the Adjusted Close prices from the raw data. These works can be done by the function <strong>get_data()</strong> described in section 1.1.</p>
 </li>
-<li><p>Some technical indicators such as Bollinger Bond Value, Relative Strengh Index and so on are computed based on the Adjusted Close data. For each stock of interest, 18 technical indicators are computed, and they will be used as input features in our regression models. The target value of our regression models is the rate (in percentage) that the price will change at the future date corresponds to the prediction interval. The target value is also computed based on the Adjusted Close data. The features and corresponding target value are combined to form the training data. These works can by done by the function <strong>process_data()</strong> function in section 1.1. Both <strong>get_data()</strong> and <strong>process_data()</strong> functions are included in file <strong>DataGetter.py</strong>.</p>
+<li><p>Some technical indicators such as Bollinger Bond Value, Relative Strengh Index and so on are computed based on the Adjusted Close data. For each stock of interest, 18 technical indicators are computed, and they will be used as input features in our regression models. The target value of our regression models is the rate (in percentage) that the price will change at the future date corresponds to the prediction interval. The target value is also computed based on the Adjusted Close data. The features and corresponding target value are combined to form the training data. These works can by done by the function <strong>process_data()</strong> function in section 1.1.</p>
 </li>
 <li><p>Regression methods including KNN, Bagging, Decision Tree and Random Forest are applied on the training data. Decision Tree and Random Forest methods are from the <strong>sci-kit learn</strong> module. KNN and Bagging methods are implemented by myself. They are described in section 1.2. During the model fitting process, each method attempts different choices of tuning parameters. All the models are evaluated in the training phase, and the best model is selected as the final model of the predictor interface. Specifically, we firstly divide the training data into two parts: a smaller training data set (75%) and a validation data set (25%). Then the smaller training data set is used to fit regression models, each of which attempts different tuning paramters. These models' performance then are evaluated on the validation data set, and the best method and corresponding optimal choice of the tuning parameter are selected. Finally, we use the whole training data set to fit a regression model using the best method and its corresponding optimal choice of tuning parameter. And this model will be used as the final model in the predictor system. These works are done by the methods of <strong>BestLearner</strong> class.</p>
 </li>
@@ -11776,7 +11776,7 @@ The stock predictor firstly asks the user to input: stocks we are interested in,
 <ul>
 <li>After the final model is obtained, the user interface will ask the user to input a query date. The features at the query date will be computed and used to predict the rate of change of the stocks. Then the predictions of each stock's future price is computed based on its price at the query date and its predicted rate of change. The interface then output the predictions. </li>
 </ul>
-<p>All the above works are combined in the class <strong>StockIndicator</strong>, which is included in the file <strong>StockIndicator.py</strong>. The code for the user interface consists of DataGetter.py, KNN.py, BagLearner.py, BestLearner.py and StockIndicator.py. The interface can be run under Ubuntu 14.04 by typing "python StockIndicator.py" in the terminal. The interface can also be run in this notebook. The details will be illustrated in the section 1.</p>
+<p>All the above works are combined and saved in the class <strong>StockIndicator</strong>, which is the core claass for the user interface of the stock price predictor. The interface can be run in this notebook. The details will be illustrated in the section 1.</p>
 <p><strong>2. case studies based on the stock predictor </strong><br>
 Three case studies are conducted to evaluate the stock predictor we built in part 1. They are:</p>
 <ul>
@@ -11785,7 +11785,7 @@ Three case studies are conducted to evaluate the stock predictor we built in par
 <li><strong>IBM</strong>:    training date range: 01/01/2010-12/31/2013, testing date range: 01/01/2014-12/31/2014</li>
 </ul>
 <p>In each case study, a stock predictor is built using the data of training date range. Then the predictor is tested on the data of testing date range. The mean absolute percentage error (MAPE) is used as the metrics to evaluate the performance of the predictor. We also construct a trading strategy based on the predictions given by the predictor. The trading strategy is then used to trade the stock on the testing date range, and the portfolio values are computed. To evaluate the trading strategy, the cumulative return and Sharpe ratio on the portfolio values will be computed. Also, we will use the stock prices during the testing date range as the benchmark to compare with the portfolio values. These works are all implemented in the class <strong>TradeStock</strong>. The trading strategy is implemented in the method <strong>create_orders()</strong>. The method <strong>create_results()</strong> generates the results of the study.</p>
-<p>The code for case studies is included in file <strong>TradingStrategy.py</strong>. By typing "python TradingStrategy.py" in the terminal, the results of the studies shown in the report will be generated. The explanation of the code will be illustrated in the later part of this notebook. Also, the results and plots that shown in the report will also be generated and explained in the notebook.</p>
+<p>The explanation of the code will be illustrated in the later part of this notebook. Also, the results and plots that shown in the report will also be generated and explained in the notebook.</p>
 
 </div>
 </div>
@@ -11835,16 +11835,6 @@ Three case studies are conducted to evaluate the stock predictor we built in par
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="1.1-Extract-Stock-Price-Data--and-Pre-process-Data">1.1 Extract Stock Price Data  and Pre-process Data<a class="anchor-link" href="#1.1-Extract-Stock-Price-Data--and-Pre-process-Data">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>get_data()</strong> and <strong>process_data()</strong> functions are included in <strong>DataGetter.py</strong> file.</p>
-
 </div>
 </div>
 </div>
@@ -12110,7 +12100,7 @@ Three case studies are conducted to evaluate the stock predictor we built in par
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="1.2.1-K-Nearest--Neighbors-Regression-Model">1.2.1 K-Nearest- Neighbors Regression Model<a class="anchor-link" href="#1.2.1-K-Nearest--Neighbors-Regression-Model">&#182;</a></h4><p>The class <strong>KNNLearner</strong> is included in <strong>KNN.py</strong>. The modules <strong>numpy</strong> and <strong>pandas</strong> need to be imported before the class is built.</p>
+<h4 id="1.2.1-K-Nearest--Neighbors-Regression-Model">1.2.1 K-Nearest- Neighbors Regression Model<a class="anchor-link" href="#1.2.1-K-Nearest--Neighbors-Regression-Model">&#182;</a></h4><p>The modules <strong>numpy</strong> and <strong>pandas</strong> need to be imported before the class <strong>KNNLearner</strong> is built.</p>
 <p>The class <strong>KNNLearner</strong> builds a KNN regression model object and provides a method to make prediction on new input instances. The default <strong>k</strong> is 3, and you can adjust <strong>k</strong> to any value you want in the class initialization step. The methods in the class is sci-kit learner style. The detailed code is as follows:</p>
 
 </div>
@@ -12177,8 +12167,7 @@ Three case studies are conducted to evaluate the stock predictor we built in par
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="1.2.2-Bagging-for-KNN-model">1.2.2 Bagging for KNN model<a class="anchor-link" href="#1.2.2-Bagging-for-KNN-model">&#182;</a></h4><p>The code of <strong>BagLearner</strong> class is included in</p>
-<p>The <strong>BagLearner</strong> class builds a bagging ensemble model. The default base regression model in the ensemble is the KNN model that was described in the above. Each base model is fitted on a bootstrapped data set. The default ensemble size 20, and it can be adjusted during the class initialization. The class is also a sci-kit learn style, which provides <strong>fit()</strong> and <strong>predict()</strong> methods. The details of the class is shown in below code.</p>
+<h4 id="1.2.2-Bagging-of-KNN-model">1.2.2 Bagging of KNN model<a class="anchor-link" href="#1.2.2-Bagging-of-KNN-model">&#182;</a></h4><p>The <strong>BagLearner</strong> class builds a bagging ensemble model. The default base regression model in the ensemble is the KNN model that was described in the above. Each base model is fitted on a bootstrapped data set. The default ensemble size 20, and it can be adjusted during the class initialization. The class is also a sci-kit learn style, which provides <strong>fit()</strong> and <strong>predict()</strong> methods. The details of the class is shown in below code.</p>
 
 </div>
 </div>
@@ -12271,7 +12260,7 @@ Three case studies are conducted to evaluate the stock predictor we built in par
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <strong>BestLearner</strong> class provides methods that evaluate models of KNN, Bagging, Decision Tree and Random Forest based on the performance of validation data set, and select the best one as the final regression model of the predictor system. It is included in <strong>BestLearner.py</strong>.</p>
+<p>The <strong>BestLearner</strong> class provides methods that evaluate models of KNN, Bagging, Decision Tree and Random Forest based on the performance of validation data set, and select the best one as the final regression model of the predictor system.</p>
 <p>As described before, the target varible of the regression models is the rate of change of the stock in the future. After we obtained the predicted rate of change from a model, the predicted stock price can be easily computed by multipying the stock price of the query date with (1 + predicted rate of change). The metrics to evaluate the performance of the models we use in this project is the mean absolute percentage error (MAPE), which is defined as follows. Suppose the target values of the validation set are $\{y_{1}, y_{2}, ..., y_{n}\}$, and the corresponding predicted target values by a KNN learner are $\{\hat{y_{1}}, \hat{y_{2}},..., \hat{y_{n}}\}$, then the MAPE is 
 $$
 \text{MAPE} = \frac{\sum_{i=1}^{n} |y_{i}-\hat{y_{i}}|}{n}
@@ -12584,7 +12573,7 @@ $$</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>So far, we have implemented the functions for obtaining and pre-processing stock data, and classes for fitting regression models and selecting the best one among them. In this section, we will combine these functions and classes together by implementing the <strong>StockIndicator</strong> class. The <strong>StockIndicator</strong> class is the core of the User Interface of Stock Price Predictor. It is included in <strong>StockIndicator.py</strong> file.</p>
+<p>So far, we have implemented the functions for obtaining and pre-processing stock data, and classes for fitting regression models and selecting the best one among them. In this section, we will combine these functions and classes together by implementing the <strong>StockIndicator</strong> class. The <strong>StockIndicator</strong> class is the core of the User Interface of Stock Price Predictor.</p>
 <p>The <strong>StockIndicator</strong> class is initialized by storing the inputs: the stock symbols (<strong>self.symbols</strong>), the training start date (<strong>self.train_sd</strong>), the training end date (<strong>self.train_ed</strong>) and the prediction interval (<strong>self.n_days</strong>).</p>
 <p>The <strong>processing_data()</strong> method calls the <strong>get_data()</strong> and the <strong>process_data()</strong> functions from section 1.1 to process the stock data for fitting regression models. <strong>self.processed_train</strong> is a dictionary where the key is a symbol and the corresponding value is the training data set of that symbol. <strong>self.processed_test</strong> is a dictionary where the key is a stock symbol and the corresponding value is the testing data set of that symbol ranging from the date <strong>self.train_ed</strong> to present.</p>
 <p>The <strong>learn_from_data()</strong> method constructs objects of <strong>BestLearner</strong> class which build the best regression model based on the training data for each of the stock symbols. The <strong>self.best_learners</strong> is a dictionary that stores the best regression models for each of the symbols. The key of the <strong>self.best_learners</strong> dictionary is a stock symbol and the corresponding value is a <strong>BestLearner</strong> object that consists of the best regression model of the stock.</p>
@@ -12826,12 +12815,10 @@ $$</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The class <strong>StockIndicator</strong> is used to build a User Interface of Stock Predictor. The code of the interface is included in the <strong>main</strong> function of <strong>StockIndicator.py</strong>. This interface can be run in the terminal. I have already test this user interface under the system Ubuntu 14.04. The python version is 2.7x. Before you run the interface, you need to make sure that you have already installed all the modules imported at the beginning of this notebook.</p>
-<p>In order to run the interface in the terminal, you need to store the files <strong>DataGetter.py</strong>, <strong>KNN.py</strong>, <strong>BagLearner.py</strong>, <strong>BestLearner.py</strong> and <strong>StockIndicator.py</strong> under the same folder. Then you open a terminal and go to the path of the folder that contains these file. You type: python StockIndicator.py, you will enter the interface. The interface will ask you to input some information such as stock symbols, prediction interval etc. step by step. Then the interface will run the code we illustrated in the above sections to fit regression models and make predictions for you.</p>
-<p>The interface can also be run in this notebook. The code of the <strong>main</strong> function in <strong>StockIndicator.py</strong> is shown below. We will present the interface by running it in this notebook. We will use the same example shown in section 1.3, which predicts the Adjusted Close price of stocks Google and IBM. The training data is from 01/01/2011 to 12/31/2014. And the prediction interval is 5 trading days. After the model is finalized, we will use the interface to predict the stock prices of Google and IBM on the day that 5 trading days after 01/06/2015 (query date).</p>
+<p>The class <strong>StockIndicator</strong> is used to build a User Interface of Stock Predictor. We will present the interface by running it in this notebook. The code of the interface is shown in the following <strong>main</strong> cell. When you execute the following code, the interface will ask you to input some information such as stock symbols, prediction interval etc. step by step. Then the interface will run the code we illustrated in the above sections to fit regression models and make predictions for you. We will use the same example shown in section 1.3, which predicts the Adjusted Close price of stocks Google and IBM. The training data is from 01/01/2011 to 12/31/2014. And the prediction interval is 5 trading days. After the model is finalized, we will use the interface to predict the stock prices of Google and IBM on the day that 5 trading days after 01/06/2015 (query date).</p>
 <p>When we execute the code below, the first thing the interface want you to input is the stock symbols. What we need to input is: "GOOG IBM". Please don't forget the quotes ("") when input. Then the interface will ask you to input the training start date, where you need to input "2011-01-01". Then the interface will ask you to input the training end date, where you need to input "2014-12-31". You need to input the dates exactly the same as showed to make sure the interface work, and don't forget the quotes. Then you will need to input the prediction interval, which in this example is 5 (do not need quotes). Then, the interface will fit the regression models. This process will take a couple of minutes. After the model fitting is finished, the interface will ask you to input the current date. In this example, you should input "2015-01-06". Then the predictions will be shown. After the predictions are shown, the interface will ask you if you want to continue make other predictions or not. In this case, we will input "n" as a no.</p>
 <p>After running the interface, you will find that the predictions by the interface is the same as the predictions in the example shown in section 1.3. That is, based on the stock information of 01/06/2015, the stock price of Google on 01/12/2015 (5 trading days after 01/06/2015) is predicted as 508.66 USD, and the stock price of IBM on 01/12/2015 is predicted as 143.48 USD.</p>
-<p>You can also use this interface to make predictions of other stocks. And the date range, the prediction interval can also be adjusted as you wish. When you run this interface in the terminal using the same example, you will get the same result.</p>
+<p>You can also use this interface to make predictions of other stocks. And the date range, the prediction interval can also be adjusted as you wish.</p>
 
 </div>
 </div>
@@ -12841,14 +12828,15 @@ $$</p>
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># main code of the user interface of the stock price predictor</span>
+<span class="k">print</span> <span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 <span class="k">print</span> <span class="p">(</span><span class="s2">&quot;Welcome to FEI Stock Indicator&quot;</span><span class="p">)</span>
 <span class="k">print</span> <span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 
 <span class="k">print</span> <span class="p">(</span><span class="s2">&quot;You need to input some information first before making any prediction on stock prices.&quot;</span><span class="p">)</span>
 <span class="k">print</span> <span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 
-<span class="k">print</span> <span class="p">(</span><span class="s2">&quot;First of all, enter the symbols of the stocks you want to predict in the form as the following instance: &#39;APPL GOOG IBM&#39;.&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="p">(</span><span class="s2">&quot;First of all, enter the symbols of the stocks you want to predict in the form as the following instance: &#39;AAPL GOOG IBM&#39;.&quot;</span><span class="p">)</span>
 <span class="k">print</span> <span class="p">(</span><span class="s2">&quot;You should enter a string containing valid stock symbols with a space between each pair of them, don&#39;t forget the quotes&quot;</span><span class="p">)</span>
 
 <span class="n">symbols_string</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Now, enter the symbols: &quot;</span><span class="p">)</span>
